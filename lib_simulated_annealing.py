@@ -4,11 +4,14 @@
 program: lib_simulated_annealing.py
 author: tc
 created: 20-12-06 -- 21 CEST
+last-modified: 2015-12-07 -- 21 CEST
 '''
 
+# imports for python 2/3 compatibility
 from __future__ import print_function
 from builtins import range
 from builtins import object
+
 import time
 
 
@@ -31,7 +34,6 @@ def simulated_annealing(problem, beta_min=1e-2, beta_max=1e2,
       *E_min*         : the global energy minimum (if known)
 
     Output:
-
       *problem*       : updated version
       *E*             : list of the final energies for each temperatures
       *elapsed_time*  : time it took, in seconds
@@ -59,8 +61,8 @@ def simulated_annealing(problem, beta_min=1e-2, beta_max=1e2,
 
 if __name__ == '__main__':
 
-    import random
     import math
+    import random
     import matplotlib.pyplot as plt
 
     class Potential_1d(object):
@@ -92,9 +94,8 @@ if __name__ == '__main__':
     problem = Potential_1d()
     problem, E, e_time = simulated_annealing(problem, cooling_rate=0.02,
                                              beta_min=1e-2, beta_max=5e2)
-    print(problem.x, problem.energy)
     plt.xlabel('step', fontsize=18)
     plt.ylabel('energy', fontsize=18)
-    plt.plot(list(range(len(E))), E)
+    plt.plot(E)
     plt.ylim(bottom=0.0)
     plt.show()

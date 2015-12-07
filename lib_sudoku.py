@@ -8,6 +8,9 @@ created: 2015-12-06 -- 20
 Energy is defined as .. #FIXME
 
 '''
+from __future__ import print_function
+from builtins import range
+from builtins import object
 
 
 import sys
@@ -16,27 +19,23 @@ import random
 import math
 
 
-class Sudoku():
+class Sudoku(object):
 
-    def __init__(self, args):
+    def __init__(self, input_file, seed=0):
         '''
         args... #FIXME
         '''
 
-        # random seed
-        if 'random_seed' in args.keys():
-            seed = args['random_seed']
-        else:
+        print('[]')
+
+        # set random seed
+        if seed == 0:
             seed = random.randrange(99999999)
         random.seed(seed)
-        print '[sudoku] random seed: %i' % seed
+        print('[sudoku] random seed: %i' % seed)
 
         # initialize and fill puzzle
-        if args['init'] == 'random':
-            number_clues = args['number_clues']
-            self._generate_puzzle(number_clues)
-        elif args['init'] == 'read':
-            self._load_puzzle(args['input_file'])
+        self._load_puzzle(input_file)
         self._fill_puzzle()
         assert self.puzzle.min() >= 1
         assert self.puzzle.max() <= 9
@@ -54,42 +53,18 @@ class Sudoku():
         assert x.min() >= 0
         self.puzzle = x[:, :]
         number_clues = (x > 0).sum()
-        print '[sudoku] read puzzle from %s (%i clues)' % (filename,
-                                                           number_clues)
-
-    def _generate_puzzle(self, number_clues, max_trials=10 ** 4):
-        print '[sudoku] start generating puzzle (%i clues)' % number_clues
-        self.puzzle = numpy.zeros((9, 9), dtype=numpy.int)
-        trials = 0
-        while (self.puzzle > 0).sum() < number_clues:
-            trials += 1
-            i = random.randrange(9)
-            j = random.randrange(9)
-            if self.puzzle[i, j]:
-                continue
-            n = random.randrange(1, 10)
-            if n in self.puzzle[i, :]:
-                continue
-            if n in self.puzzle[:, j]:
-                continue
-            if n in self._get_box(i, j):
-                continue
-            self.puzzle[i, j] = n
-            # check number of trials
-            if trials > max_trials:
-                sys.exit('[sudoku] ERROR: could not generate puzzle with ' +
-                         '%i clues' % number_clues)
-        print '[sudoku] generated puzzle (%i clues)' % number_clues
+        print('[sudoku] read puzzle from %s (%i clues)' % (filename,
+                                                           number_clues))
 
     def _fill_puzzle(self):
         ''' Replaces zeros with random numbers.
         '''
-        tot = range(1, 10) * 9
+        tot = list(range(1, 10)) * 9
         for n in self.puzzle[numpy.nonzero(self.puzzle)].flatten():
             tot.pop(tot.index(n))
         self.non_clues = []
-        for i in xrange(9):
-            for j in xrange(9):
+        for i in range(9):
+            for j in range(9):
                 if not self.puzzle[i, j]:
                     self.non_clues.append([i, j])
                     self.puzzle[i, j] = tot.pop(random.randrange(len(tot)))
@@ -102,9 +77,9 @@ class Sudoku():
 
     def _compute_energy(self):
         E = 0
-        list_i = range(9)
+        list_i = list(range(9))
         list_j = [0, 3, 6, 1, 4, 7, 2, 5, 8]
-        for ind in xrange(9):
+        for ind in range(9):
             E += self._local_energy(list_i[ind], list_j[ind])
         return E
 
@@ -145,23 +120,15 @@ class Sudoku():
         else:
             self.puzzle[i, j] = n_old
 
-    def print_puzzle(self, Fancy=True):
-        if Fancy:
-            print 29 * '-'
-        for i in xrange(9):
-            for j in xrange(9):
-                print self.puzzle[i, j],
-                if (j + 1) % 3 == 0 and Fancy:
-                    print '|',
-                else:
-                    print '',
-            print
-            if (i + 1) % 3 == 0 and Fancy:
-                print 29 * '-'
+    def print_puzzle(self):
+        for i in range(9):
+            for j in range(9):
+                print(self.puzzle[i, j], end=' ')
+            print()
 
 
 if __name__ == '__main__':
     args = {'init': 'read', 'input_file': 'puzzle.dat'}
     S = Sudoku(args)
     S.print_puzzle()
-    print S.energy
+    print(S.energy)

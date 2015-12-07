@@ -6,6 +6,9 @@ author: tc
 created: 20-12-06 -- 21 CEST
 '''
 
+from __future__ import print_function
+from builtins import range
+from builtins import object
 import time
 
 
@@ -35,22 +38,22 @@ def simulated_annealing(problem, beta_min=1e-2, beta_max=1e2,
     '''
 
     time_start = time.clock()
-    print '[sa] start'
+    print('[sa] start')
     problem.set_beta(beta_min)
     E = []
     while problem.beta < beta_max:
         # TODO: add a message after a while
-        print '[sa] beta = %g\tE = %g' % (problem.beta, problem.energy)
-        for step in xrange(n_steps_per_T):
+        print('[sa] beta = %g\tE = %g' % (problem.beta, problem.energy))
+        for step in range(n_steps_per_T):
             problem.MC_move()
         E.append(problem.energy)
         if problem.energy <= E_min:
-            print '[sa] reached E=%g' % problem.energy
+            print('[sa] reached E=%g' % problem.energy)
             break
         problem.set_beta(problem.beta * (1.0 + cooling_rate))
-    print '[sa] end'
+    print('[sa] end')
     elapsed_time = time.clock() - time_start
-    print '[sa] elapsed: %.2f s' % elapsed_time
+    print('[sa] elapsed: %.2f s' % elapsed_time)
     return problem, E, elapsed_time
 
 
@@ -60,7 +63,7 @@ if __name__ == '__main__':
     import math
     import matplotlib.pyplot as plt
 
-    class Potential_1d():
+    class Potential_1d(object):
         '''
         Naive class, to test the simulated-annealing function.
         '''
@@ -89,9 +92,9 @@ if __name__ == '__main__':
     problem = Potential_1d()
     problem, E, e_time = simulated_annealing(problem, cooling_rate=0.02,
                                              beta_min=1e-2, beta_max=5e2)
-    print problem.x, problem.energy
+    print(problem.x, problem.energy)
     plt.xlabel('step', fontsize=18)
     plt.ylabel('energy', fontsize=18)
-    plt.plot(range(len(E)), E)
+    plt.plot(list(range(len(E))), E)
     plt.ylim(bottom=0.0)
     plt.show()
